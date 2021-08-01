@@ -136,8 +136,7 @@ public class ProdutoDao {
             pstm.setString(3, produto.getDescricao());
             pstm.setFloat(4, produto.getPeso());
             pstm.setFloat(5, produto.getPreco());
-            pstm.setFloat(6, produto.getQtdReclamacoes());
-            pstm.setFloat(7, produto.getIdProduto());
+            pstm.setFloat(6, produto.getIdProduto());
             
             int i = pstm.executeUpdate();
             return i > 0;

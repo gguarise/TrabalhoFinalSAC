@@ -28,9 +28,33 @@
             <c:set var="msg" value="Usuário deve se autenticar para acessar o sistema." scope="request"/>
             <jsp:forward page="index.jsp"/>
         </c:if> 
-    
-        <c:import url="navegacao.jsp"/>
-        
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1>Bem vindo(a), ${logado.getNome()}</h1>
+            </div>
+        </div>
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link disabled">Menu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/FuncionarioServlet?action=">Atendimentos em Aberto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/FuncionarioServlet?action=">Listar Todos os Atendimentos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/FuncionarioServlet?action=">Cadastro de Categorias de Produto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/FuncionarioServlet?action=">Cadastro de Produtos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/LogoutServlet">Logout</a>
+                </li>
+            </ul>
+        </nav>
         <div class="container">
             </br>
             <h2>Atendimentos:</h2>
@@ -54,10 +78,10 @@
                         <fmt:formatDate value="${now}" pattern="yyyyMMdd" var="agora"/> 
                         <fmt:formatDate value="${atendimento.dataHoraInicio.getTime()}" var="dataInicial" pattern="yyyyMMdd" />
                         <c:set value="light-grey" var="color"/>
-                        <c:if test="${atendimento.situacao.idSituacao == 1 && (agora - dataInicial) >= 7}">
+                        <c:if test="${atendimento.situacao.id == 1 && (agora - dataInicial) >= 7}">
                             <c:set value="red" var="color"/>
                         </c:if>
-                        <c:if test="${atendimento.situacao.idSituacao == 1 && (agora - dataInicial) < 7}">
+                        <c:if test="${atendimento.situacao.id == 1 && (agora - dataInicial) < 7}">
                             <c:set value="yellow" var="color"/>
                         </c:if>
 
@@ -68,12 +92,7 @@
                             <td><c:out value="${atendimento.situacao.estado}"/></td>
                             <td><fmt:formatDate value="${atendimento.dataHoraInicio.getTime()}" pattern="dd/MM/yyyy HH:mm"/></td>
                             <td>
-                                <c:if test="${atendimento.situacao.idSituacao == 1}">
-                                    <a href="${pageContext.request.contextPath}/FuncionarioServlet?action=formResolverAtendimento&idAtendimento=${atendimento.idAtendimento}"><button>Resolver</button></a>
-                                </c:if>
-                                <c:if test="${atendimento.situacao.idSituacao == 2}">
-                                    <a href="${pageContext.request.contextPath}/FuncionarioServlet?action=formResolverAtendimento&idAtendimento=${atendimento.idAtendimento}"><button>Visualizar</button></a>
-                                </c:if>
+                                <a href="${pageContext.request.contextPath}/FuncionarioServlet?action=show&id=${atendimento.idAtendimento}"><button>Resolver</button></a>
                             </td>
                         </tr>
                     </c:forEach>

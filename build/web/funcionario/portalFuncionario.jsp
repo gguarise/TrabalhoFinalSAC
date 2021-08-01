@@ -8,6 +8,7 @@
 <%@page import="java.util.List"%>
 <%@page import="com.ufpr.tads.web2.beans.Atendimento"%>
 <%@page errorPage = "/erro.jsp" %>
+<!--ver encaminha pra pag erro !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="java.util.Date" %>
@@ -28,9 +29,33 @@
             <c:set var="msg" value="Usuário deve se autenticar para acessar o sistema." scope="request"/>
             <jsp:forward page="index.jsp"/>
         </c:if> 
-            
-        <c:import url="navegacao.jsp"/>
-        
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1>Bem vindo(a), ${logado.getNome()}</h1>
+            </div>
+        </div>
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link disabled">Menu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/FuncionarioServlet?action=portal">Atendimentos em Aberto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/FuncionarioServlet?action=todosAtendimentos">Listar Todos os Atendimentos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/FuncionarioServlet?action=">Cadastro de Categorias de Produto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/FuncionarioServlet?action=">Cadastro de Produtos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/LogoutServlet">Logout</a>
+                </li>
+            </ul>
+        </nav>
         <div class="container">
             </br>
             <h2>Atendimentos:</h2>

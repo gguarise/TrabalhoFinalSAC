@@ -4,8 +4,15 @@
     Author     : jessi
 --%>
 
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
+<%@page import="com.ufpr.tads.web2.beans.Atendimento"%>
+<%@page errorPage = "/erro.jsp" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="UTF-8" errorPage="/erro.jsp" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page import="java.util.Date" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,76 +20,70 @@
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <title>Atendimentos</title>
      <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-     <link rel="stylesheet" href="/trabalhoFinalSAC/style.css">
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/style.css"/>
  </head>
   <body>
+      <c:if test="${empty sessionScope.logado}">
+            <c:set var="msg" value="Usuário deve se autenticar para acessar o sistema." scope="request"/>
+            <jsp:forward page="index.jsp"/>
+        </c:if>
     <div class="wrapper page-extra">
      <nav class="top-section navbar">
-         <h3> Atendimentos </h3>
-          <a href="/trabalhoFinalSAC/logout" class="float-right btn btn-danger rounded">Sair</a>
+         <a href="#" class=" nav-link buttons rounded"> <h2>Atendimentos</h2></a>
+          <a href="${pageContext.request.contextPath}/ClienteServlet?action=portal" class="float-right btn btn-danger rounded">Voltar</a>
      </nav>   
        <div class="container">
         <div class="row login">
-         <div class="col-md-12"> 
+            <div class="col-md-12"><br>
          <h1 class="title h1 m-0 mt-4 text-center">Novo Atendimento</h1><br>
-          <form class="form shadow " method="post" action="">     
-         <input type="hidden" name="entity" value="individual">
+          <form class="form shadow " method="post" action="${pageContext.request.contextPath}/ClienteServlet?action=novoAtendimento">     
+         <input type="hidden" name="cliente" value="${cliente.id}"><br>
             <div class="form-group">
                 <div class="col-sm-12">
-                    <div class="form-group">
-                      <label for="product">Produto</label>
-                      <select class="custom-select" id="tipoProduto" name="produto" required="true">
-                        <option value="" disabled="disabled" selected="selected">Selecione...</option>
-                        <option value="">Produto A</option>
-                        <option value="">Produto B</option>
-                        <option value="">Produto C</option>
+                    
+                  <div class="form-group">
+                    <label for="attendance">Tipo de atendimento</label>
+                      <select class="custom-select" id="tipoAtendimento" name="tipoAtendimento" required>
+                          <c:forEach var="atendimento" items="${listaTipoAtendimento}">
+                            <option value="${atendimento.idTipo}"}>
+                                <c:out value="${atendimento.nome}"/> 
+                            </option>
+                               </c:forEach>
                       </select>
                     </div>
                   </div>
-                <div class="col-sm-12">
-                    <div class="form-group">
-                      <label for="attendance">Tipo de atendimento</label>
-                      <select class="custom-select" id="tipoAtendimento" name="atendimento" required="true">
-                          <option value="" disabled="disabled" selected="selected">Selecione...</option>
-                          <option value=""> A</option>
-                          <option value=""> B</option>
-                          <option value=""> C</option>
-                      </select>
-                    </div>
-                  </div>
-              </div>
+              </div>     
+                      
+             <div class="col-sm-12">
+                <div class="form-group">
+                    <label for="attendance">Tipo Produto</label>
+                      <select class="custom-select" id="produto" name="produto" required>
+                          <c:forEach var="atendimento" items="${listaProdutos}">
+                            <option value="${atendimento.idProduto}"}>
+                                <c:out value="${atendimento.nome}"/> 
+                            </option>
+                          </c:forEach>
+                      </select>             
+                   </div>
+             </div>
+                      
             <div class="col-sm-12">
               <label for="description">Descrição do atendimento</label>
-              <textarea id="descAtendimento" class="form-control" rows="10" name="descricao" minlength="2" maxlength="50" value=""></textarea>
+              <textarea id="descAtendimento" class="form-control" rows="10" name="reclamacao" minlength="2" maxlength="50" value="" required="true" value="${atendimento.reclamacao}" ></textarea>
             </div>
-              <div class="row">
-              <div class="col-sm-6">
-               <div class="form-group">
-                <div class="row align-items-center">
-                  <div class="col-sm-6 mt-4 mt-sm-0"><br>
-                    <button type="submit" class="btn btn-secondary btn-lg btn-block"> Voltar </button>
-                  </div>
-                </div>
-              </div>
-             </div>
-              <div class="col-sm-6">
-               <div class="form-group">
-                <div class="row align-items-center">
-                  <div class="col-sm-6 mt-4 mt-sm-0"><br>
-                    <button type="submit" class="btn buttons btn-lg btn-block"> Cadastrar </button>
-                  </div>
-                </div>
-              </div>
-             </div>
-            </div>
+            <br>
+            <a href="${pageContext.request.contextPath}/ClienteServlet?action=novoAtendimento"><button type="submit" class="btn btn-info"> Cadastrar </button>
+            
           </form></div>
             <div class="footer">
-              Em caso de problemas contactar o administrador:<br>
-              <a href="mailto:">
-               </a>
-                </div>
+             Em caso de problemas contactar o administrador: <jsp:getProperty name="configuracao" property="email"/>
+            </div>
             </div>   
           </div>          
       </div>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+            <script src="${pageContext.request.contextPath}/js/jquery-mask.min.js"></script>
     </body>
 </html>

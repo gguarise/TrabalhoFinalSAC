@@ -43,7 +43,6 @@ public class Ferramentas {
         {
             FerramentasDao ferramentasDao = new FerramentasDao();
             existeEmail = ferramentasDao.confereEmail(email);
-   
         }
         catch(SQLException | ClassNotFoundException e)
         {

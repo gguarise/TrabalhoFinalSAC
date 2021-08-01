@@ -3,8 +3,9 @@
     Created on : 23/07/2021, 21:36:55
     Author     : jessi
 --%>
+
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="UTF-8" errorPage="/jsp/erro.jsp" %>
+<%@page contentType="text/html" pageEncoding="UTF-8" errorPage="/erro.jsp" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -46,17 +47,12 @@
                                 <input id="senha" class="lf--input" placeholder="Senha" name="senha" type="password">
                             </div>
                             <input class="lf--submit" type="submit" value="Login">
-                            <a class="lf--forgot" href="${pageContext.request.contextPath}/LoginServlet?action=autoCadastro" >Cadastre-se</a>
-                            <c:if test="${msg != null}">
-                                <div class="alert alert-danger" role="alert">
-                                    <c:out value="${msg}" />
-                                </div>
-                            </c:if>
+                            <form>
+                              <a class="lf--forgot"  href="${pageContext.request.contextPath}/LoginServlet?action=autoCadastro" >Cadastre-se</a>
+                            </form>
                         </form>
-                        <div class="footer">
-                            Em caso de problemas contactar o administrador:<br>
-                            <a href="mailto:${configuracao.email}">
-                                <c:out value="${configuracao.email}" /> </a>
+                        <div class= "footer">
+                             Em caso de problemas contactar o administrador: <jsp:getProperty name="configuracao" property="email"/>
                         </div>
                     </div>
                 </div>   

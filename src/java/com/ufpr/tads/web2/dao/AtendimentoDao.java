@@ -318,12 +318,11 @@ public class AtendimentoDao {
             pstm.setInt(2, atendimento.getFuncionario().getIdFuncionario());
             pstm.setInt(3, atendimento.getProduto().getIdProduto());
             pstm.setInt(4, atendimento.getTipoAtendimento().getIdTipo());
-            pstm.setInt(5, 2); // situacao Fechada
+            pstm.setInt(5, atendimento.getSituacao().getIdSituacao());
             pstm.setTimestamp(6, new Timestamp(atendimento.getDataHoraInicio().getTimeInMillis()));
             pstm.setTimestamp(7, new Timestamp(atendimento.getDataHoraFim().getTimeInMillis()));
             pstm.setString(8, atendimento.getReclamacao());
             pstm.setString(9, atendimento.getSolucao());
-            pstm.setInt(10, atendimento.getIdAtendimento());
             pstm.executeUpdate();
             
             return true;

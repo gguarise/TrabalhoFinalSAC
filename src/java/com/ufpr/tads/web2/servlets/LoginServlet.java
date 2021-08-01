@@ -73,7 +73,7 @@ public class LoginServlet extends HttpServlet {
         
             ServletContext sc = request.getServletContext();
             
-            if(login == null || senha == null)
+            if(action.equals("logar") && (login == null || senha == null))
             {
                 request.setAttribute("msg", "Campos Login e Senha são obrigatórios");
                 RequestDispatcher rd = sc.getRequestDispatcher("/index.jsp");
@@ -85,7 +85,7 @@ public class LoginServlet extends HttpServlet {
                 {
                     List<Estado> listaEstados = EstadoFacade.getLista();
                     request.setAttribute("listaEstados", listaEstados);
-                    RequestDispatcher rd = sc.getRequestDispatcher("/cliente/autocadastro.jsp");
+                    RequestDispatcher rd = sc.getRequestDispatcher("/cliente/autoCadastro.jsp");
                     
                     rd.forward(request, response);
                 }
@@ -117,7 +117,7 @@ public class LoginServlet extends HttpServlet {
                         session.setAttribute("logado", loginBean);
 
                         //Adicionar caminho para portal de Cliente
-                        RequestDispatcher rd = sc.getRequestDispatcher("/cliente/portal.jsp");
+                        RequestDispatcher rd = sc.getRequestDispatcher("/cliente/portalCliente.jsp");
                         rd.forward(request, response);
                     }
                 }
@@ -201,7 +201,7 @@ public class LoginServlet extends HttpServlet {
                         session.setAttribute("logado", loginBean);
 
                         //Adicionar caminho para portal de Gerente
-                        RequestDispatcher rd = sc.getRequestDispatcher("/gerente/portalGerente.jsp");
+                        RequestDispatcher rd = sc.getRequestDispatcher("/gerente/portal.jsp");
                         rd.forward(request, response);
                     }
                 }

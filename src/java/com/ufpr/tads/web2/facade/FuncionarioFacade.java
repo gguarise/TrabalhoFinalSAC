@@ -81,12 +81,19 @@ public class FuncionarioFacade {
     {
         try
         {
+            String senhaCriptografada = Ferramentas.criptografaSenha(funcionario.getSenha());
+            Funcionario funcionarioAntigo = FuncionarioFacade.retornaFuncionario(funcionario.getIdFuncionario());
+            String novaSenha = funcionario.getSenha();
+            String senhaAntiga = funcionarioAntigo.getSenha();
+            if (!novaSenha.equals(senhaAntiga))
+                    funcionario.setSenha(senhaCriptografada);   
+            
             FuncionarioDao funcionarioDao = new FuncionarioDao();
             boolean confereModificacao = funcionarioDao.modificaFuncionario(funcionario);
             
             return confereModificacao;
         }
-        catch(SQLException | ClassNotFoundException e)
+        catch(SQLException | ClassNotFoundException | NoSuchAlgorithmException | UnsupportedEncodingException e)
         {
             throw new FuncionarioException("Erro ao modificar funcionario", e);
         }

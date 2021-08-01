@@ -9,7 +9,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page errorPage = "/erro.jsp" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 <html>
@@ -28,9 +27,33 @@
                    scope="request"/>
             <jsp:forward page="/index.jsp"/>
         </c:if> 
-        
-        <c:import url="navegacao.jsp"/>
-
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1>Bem vindo(a), ${logado.getNome()}</h1>
+            </div>
+        </div>
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link disabled">Menu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/FuncionarioServlet?action=">Atendimentos em Aberto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/FuncionarioServlet?action=">Listar Todos os Atendimentos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/FuncionarioServlet?action=">Cadastro de Categorias de Produto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/FuncionarioServlet?action=">Cadastro de Produtos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/LogoutServlet">Logout</a>
+                </li>
+            </ul>
+        </nav>
         <div class="container">
             </br>
             <h2>Produtos:</h2>
@@ -39,37 +62,27 @@
                 <thead>
                     <tr>
                         <th>Nome</th>
-                        <th>Descrição</th>
-                        <th>Peso</th>
-                        <th>Preço</th>
-                        <th>Categoria do Produto</th>
                         <th>Opções 
-                            <a href="${pageContext.request.contextPath}/ProdutoServlet?action=formProduto">
+                            <a href="${pageContext.request.contextPath}/CategoriaProdutoServlet?action=formNew">
                                 <button type="button" class="btn btn-secondary">Novo</button>
                             </a>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach var="produto" items="${listaProdutos}">  
+                    <c:forEach var="categoria" items="${listaCategoriasProduto}">  
                         <tr>
-                            
-                            <td><c:out value="${produto.nome}"/></td>
-                            <td><c:out value="${produto.descricao}"/></td>
-                            <fmt:setLocale value="pt-BR"/> 
-                            <td><fmt:formatNumber value="${produto.peso}" type="currency"/></td>
-                            <td><fmt:formatNumber value="${produto.preco}" type="currency"/></td>
-                            <td><c:out value="${produto.categoria.nome}"/></td>
+                            <td><c:out value="${categoria.nome}"/></td>
                             <td>
-                                <a href="${pageContext.request.contextPath}/ProdutoServlet?action=show&idProduto=${produto.idProduto}"><img src="<c:url value="/img/visualizar.png"/>" width="30" height="30"/></a>
-                                <a href="${pageContext.request.contextPath}/ProdutoServlet?action=formProduto&idProduto=${produto.idProduto}"><img src="<c:url value="/img/alterar.png"/>" width="30" height="30"/></a>
-                                <a href="${pageContext.request.contextPath}/ProdutoServlet?action=delete&idProduto=${produto.idProduto}" 
-                                   onclick="return confirm('Confirma a exclusão da categoria ${produto.nome}?')">
+                                <a href="${pageContext.request.contextPath}/CategoriaProdutoServlet?action=show&id=${categoria.id}"><img src="<c:url value="/img/visualizar.png"/>" width="30" height="30"/></a>
+                                <a href="${pageContext.request.contextPath}/CategoriaProdutoServlet?action=formUpdate&id=${categoria.id}"><img src="<c:url value="/img/alterar.png"/>" width="30" height="30"/></a>
+                                <a href="${pageContext.request.contextPath}/CategoriaProdutoServlet?action=remove&id=${categoria.id}" 
+                                   onclick="return confirm('Confirma a exclusão da categoria ${categoria.nome}?')">
                                     <img src="<c:url value="/img/remover.png"/>" width="30" height="30"/>
                                 </a>
                             </td>
-                    </tr>
-                </c:forEach>
+                        </tr>
+                    </c:forEach>
                 </tbody>
             </table>
         </div>    

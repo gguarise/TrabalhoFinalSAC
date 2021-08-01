@@ -7,7 +7,6 @@ package com.ufpr.tads.web2.facade;
 
 import com.ufpr.tads.web2.beans.Cliente;
 import com.ufpr.tads.web2.dao.ClienteDao;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
@@ -83,12 +82,19 @@ public class ClienteFacade {
     {
         try
         {
+            String senhaCriptografada = Ferramentas.criptografaSenha(cliente.getSenha());
+            Cliente clienteAntigo = ClienteFacade.retornaCliente(cliente.getIdCliente());
+            String novaSenha = cliente.getSenha();
+            String senhaAntiga = clienteAntigo.getSenha();
+            if (!novaSenha.equals(senhaAntiga))
+                cliente.setSenha(senhaCriptografada);
+            
             ClienteDao clienteDao = new ClienteDao();
             boolean confereModificacao = clienteDao.modificaCliente(cliente);
             
             return confereModificacao;
         }
-        catch(SQLException | ClassNotFoundException e)
+        catch(SQLException | ClassNotFoundException | NoSuchAlgorithmException | UnsupportedEncodingException e)
         {
             throw new ClienteException("Erro ao modificar cliente", e);
         }

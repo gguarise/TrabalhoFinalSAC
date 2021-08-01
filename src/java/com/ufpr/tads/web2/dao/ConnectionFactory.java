@@ -19,7 +19,7 @@ public class ConnectionFactory {
         Connection con = null;
         try {
             Class.forName("org.postgresql.Driver");
-            con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/TrabalhoFinalSAC","postgres","root");
+            con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/TrabalhoFinalSAC","postgres","123456");
             System.out.println("Conexao realizada com sucesso");
             return con;
         } catch (SQLException e){

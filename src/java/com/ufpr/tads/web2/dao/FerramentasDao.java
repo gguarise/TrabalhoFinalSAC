@@ -50,7 +50,10 @@ public class FerramentasDao {
                 existe = rs.getString("email");
             }
             
-            return existe != null;
+            if (existe != null)
+                return true;
+            else
+                return false;        
         }
         finally
         {

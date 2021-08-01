@@ -81,12 +81,19 @@ public class GerenteFacade {
     {
         try
         {
+            String senhaCriptografada = Ferramentas.criptografaSenha(gerente.getSenha());
+            Gerente gerenteAntigo = GerenteFacade.retornaGerente(gerente.getIdGerente());
+            String novaSenha = gerente.getSenha();
+            String senhaAntiga = gerenteAntigo.getSenha();
+            if (!novaSenha.equals(senhaAntiga))
+                    gerente.setSenha(senhaCriptografada);
+            
             GerenteDao gerenteDao = new GerenteDao();
             boolean confereModificacao = gerenteDao.modificaGerente(gerente);
             
             return confereModificacao;
         }
-        catch(SQLException | ClassNotFoundException e)
+        catch(SQLException | ClassNotFoundException | NoSuchAlgorithmException | UnsupportedEncodingException e)
         {
             throw new GerenteException("Erro ao modificar gerente", e);
         }      

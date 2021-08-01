@@ -30,50 +30,43 @@
             <jsp:forward page="/index.jsp"/>
         </c:if> 
         <div class="container">
-            <h2>Resolução de Atendimento</h2>
+            <h2>Resolução de Atendimento: </h2>
             <c:if test="${!empty atendimento}">
                 <form action="${pageContext.request.contextPath}/FuncionarioServlet?action=resolverAtendimento&idAtendimento=${atendimento.idAtendimento}" method="post">
                     <div class="form-group">
                         <label for="nomeCliente">Cliente: </label>
-                        <input type="text" class="form-control" name="nomeCliente" placeholder="${atendimento.cliente.primeiroNome} ${atendimento.cliente.sobreNome}" value="${atendimento.cliente.primeiroNome} ${atendimento.cliente.sobreNome}" readonly>
+                        <input type="text" class="form-control" id="nomeCliente" placeholder="${atendimento.cliente.primeiroNome} ${atendimento.cliente.sobreNome}" value="${atendimento.cliente.primeiroNome} ${atendimento.cliente.sobreNome}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="produto">Produto: </label>
-                        <input type="text" class="form-control" name="produto" placeholder="${atendimento.produto.nome}" value="${atendimento.produto.nome}" readonly>
+                        <input type="text" class="form-control" id="produto" placeholder="${atendimento.produto.nome}" value="${atendimento.produto.nome}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="tipoAtendimento">Tipo de Atendimento: </label>
-                        <input type="text" class="form-control" name="tipoAtendimento" placeholder="${atendimento.tipoAtendimento.nome}" value="${atendimento.tipoAtendimento.nome}" readonly>
+                        <input type="text" class="form-control" id="tipoAtendimento" placeholder="${atendimento.tipoAtendimento.nome}" value="${atendimento.tipoAtendimento.nome}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="situacao">Situação: </label>
-                        <input type="text" class="form-control" name="situacao" placeholder="${atendimento.situacao.estado}" value="${atendimento.situacao.estado}" readonly>
+                        <input type="text" class="form-control" id="situacao" placeholder="${atendimento.situacao.estado}" value="${atendimento.situacao.estado}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="dataHoraInicio">Data/Hora Início: </label>
                         <fmt:formatDate value="${atendimento.dataHoraInicio.getTime()}" pattern="dd/MM/yyyy HH:mm" var="dataHoraInicio"/>
-                        <input class="form-control" name="dataHoraInicio" placeholder="${dataHoraInicio}" value="${dataHoraInicio}" readonly>
+                        <input class="form-control" id="dataHoraInicio" placeholder="${dataHoraInicio}" value="${dataHoraInicio}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="reclamacao">Reclamação: </label>
-                        <input type="text" class="form-control" name="reclamacao" placeholder="${atendimento.reclamacao}" value="${atendimento.reclamacao}" readonly>
+                        <input type="text" class="form-control" id="reclamacao" placeholder="${atendimento.reclamacao}" value="${atendimento.reclamacao}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="solucao">Solução: </label>
-                        <c:if test="${atendimento.situacao.idSituacao == 1}">
-                            <input type="text" maxlength="200" class="form-control" name="solucao" placeholder="${atendimento.solucao}" value="${atendimento.solucao}" required>
-                        </c:if>
-                        <c:if test="${atendimento.situacao.idSituacao == 2}">
-                            <input type="text" maxlength="200" class="form-control" name="solucao" value="${atendimento.solucao}" readonly>
-                        </c:if>
+                        <input type="text" maxlength="200" class="form-control" name="solucao" value="${atendimento.solucao}" required>
                     </div>
-                    <c:if test="${atendimento.situacao.idSituacao == 1}">
-                        <button type="submit" class="btn btn-primary">Resolver</button>
-                    </c:if>
+                    <button type="submit" class="btn btn-primary">Resolver</button>
                 </form>
                 </br>
-                <form action="${pageContext.request.contextPath}/FuncionarioServlet?action=${atendimento.situacao.idSituacao == 1 ? "portal" : "todosAtendimentos"}" method="post">
-                    <input type="submit" value="${atendimento.situacao.idSituacao == 1 ? "Cancelar" : "Voltar"}" class="btn btn-primary active"/>
+                <form action="${pageContext.request.contextPath}/FuncionarioServlet?action=portal" method="post">
+                    <input type="submit" value="Cancelar" class="btn btn-primary active"/>
                 </form>
             </c:if>
         </div>  

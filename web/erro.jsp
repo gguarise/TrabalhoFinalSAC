@@ -27,7 +27,7 @@
                 <p>${pageContext.exception.printStackTrace(pageContext.response.writer)}</p>
             </div>
             <div>
-                <form action="${pageContext.request.contextPath}/LogoutServlet" method="post">
+                <form action="${pageContext.request.contextPath}/index.jsp" method="post">
                     <input type="submit" value="Sair" class="btn btn-primary active"/>
                 </form>
             </div>

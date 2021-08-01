@@ -9,8 +9,14 @@ import com.ufpr.tads.web2.beans.Cidade;
 import com.ufpr.tads.web2.beans.Cliente;
 import com.ufpr.tads.web2.beans.Endereco;
 import com.ufpr.tads.web2.beans.Estado;
+import com.ufpr.tads.web2.facade.CidadeException;
+import com.ufpr.tads.web2.facade.CidadeFacade;
 import com.ufpr.tads.web2.facade.ClienteException;
 import com.ufpr.tads.web2.facade.ClienteFacade;
+import com.ufpr.tads.web2.facade.EstadoException;
+import com.ufpr.tads.web2.facade.EstadoFacade;
+import com.ufpr.tads.web2.facade.Ferramentas;
+import com.ufpr.tads.web2.facade.FerramentasException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
@@ -42,46 +48,58 @@ public class AutoCadastroServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
             
             ServletContext sc = request.getServletContext();
             
             try
             {
-                Cliente cliente = new Cliente();
                 Endereco endereco = new Endereco();
-                Cidade cidade = new Cidade();
-                Estado estado = new Estado();
                 
-                //Seta estado vindo do form
-                estado.setSigla(request.getParameter("uf")); //Testar como vai vir do AJAX
-                
-                //Seta cidade vinda do form
+                Estado estado = EstadoFacade.retornaEstado(Integer.parseInt(request.getParameter("idEstado")));
+                Cidade cidade = CidadeFacade.retornaCidade(Integer.parseInt(request.getParameter("idCidade")));
                 cidade.setEstado(estado);
-                cidade.setNome(request.getParameter("cidade")); //Testar como vai vir do AJAX
-                
-                //Seta endereco vindo do form
                 endereco.setCidade(cidade);
                 endereco.setRua(request.getParameter("rua"));
                 endereco.setNumero(Integer.parseInt(request.getParameter("numero")));
-                String complemento = request.getParameter("complemento");
-                if (complemento != null)
-                    endereco.setComplemento(complemento);
                 endereco.setBairro(request.getParameter("bairro"));
                 endereco.setCep(Integer.parseInt(request.getParameter("cep")));
+                endereco.setComplemento(request.getParameter("complemento"));
                 
-                //Seta cliente vindo do form
-                cliente.setEndereco(endereco);
-                cliente.setEmail(request.getParameter("email"));
-                cliente.setSenha(request.getParameter("senha"));
+                Cliente cliente = new Cliente();
+                cliente.setEndereco(endereco);                
+                
                 cliente.setPrimeiroNome(request.getParameter("primeiroNome"));
                 cliente.setSobreNome(request.getParameter("sobreNome"));
                 cliente.setTelefone(request.getParameter("telefone"));
-                cliente.setCpf(Long.parseLong(request.getParameter("cpf")));
+                cliente.setSenha(request.getParameter("senha")); 
+                //Adicionar metodo para conferir validade de cpf na Facade Ferramentas;
+                cliente.setCpf(Long.parseLong(request.getParameter("cpf")));                
                 
-                ClienteFacade.adicionaCliente(cliente);
+                boolean confereEmail = Ferramentas.confereEmail(request.getParameter("email"));
+                if (confereEmail)
+                {
+                    request.setAttribute("msg", "Email ja cadastrado na base de dados");
+                    RequestDispatcher rd = request.getRequestDispatcher("/cliente/autoCadastro.jsp");
+                    rd.forward(request, response);
+                }
+                else
+                {
+                    cliente.setEmail(request.getParameter("email"));
+                    Cliente novoCliente = ClienteFacade.adicionaCliente(cliente);
+
+                    if (novoCliente != null)
+                    {
+                        response.sendRedirect(request.getContextPath() + "/index.jsp");
+                    }
+                    else
+                    {
+                        request.setAttribute("msg", "Erro ao adicionar novo cliente");
+                        RequestDispatcher rd = sc.getRequestDispatcher("/erro.jsp");
+                        rd.forward(request, response);
+                    }
+                }
             }
-            catch(ClienteException | NumberFormatException e)
+            catch(ClienteException | NumberFormatException | EstadoException | CidadeException | FerramentasException e)
             {
                 request.setAttribute("msg", "ERRO: " + e.getMessage());
                 RequestDispatcher rd = request.getRequestDispatcher("/erro.jsp");

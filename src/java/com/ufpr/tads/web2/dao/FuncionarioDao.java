@@ -92,7 +92,6 @@ public class FuncionarioDao {
                 funcionario.setSobreNome(pessoa.getSobreNome());
                 funcionario.setCpf(pessoa.getCpf());
                 funcionario.setTelefone(pessoa.getTelefone());
-                funcionario.setEndereco(pessoa.getEndereco());
                 funcionarios.add(funcionario);
             }
             return funcionarios;
@@ -157,7 +156,6 @@ public class FuncionarioDao {
                 funcionario.setSobreNome(pessoa.getSobreNome());
                 funcionario.setCpf(pessoa.getCpf());
                 funcionario.setTelefone(pessoa.getTelefone());
-                funcionario.setEndereco(pessoa.getEndereco());
             }
             return funcionario;
         } finally {

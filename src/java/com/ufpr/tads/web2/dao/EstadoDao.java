@@ -18,8 +18,8 @@ import java.util.ArrayList;
  */
 public class EstadoDao {
     private ConnectionFactory connectionFactory;
-    private final String select = "SELECT idEstado, sigla, nome FROM Estado;";
-    private final String selectById = "SELECT idEstado, sigla, nome FROM Estado WHERE idEstado = ?;";
+    private final String select = "SELECT idEstado, nome FROM Estado;";
+    private final String selectById = "SELECT idEstado, nome FROM Estado WHERE idEstado = ?;";
     
     public EstadoDao() {}
     
@@ -42,7 +42,6 @@ public class EstadoDao {
             while (rs.next()) {
                 Estado estado = new Estado();
                 estado.setId(rs.getInt("idEstado"));
-                estado.setSigla(rs.getString("sigla"));
                 estado.setNome(rs.getString("nome"));
                 estados.add(estado);
             }
@@ -67,7 +66,6 @@ public class EstadoDao {
             
             while (rs.next()) {
                 estado.setId(rs.getInt("idEstado"));
-                estado.setSigla(rs.getString("sigla"));
                 estado.setNome(rs.getString("nome"));
             }
             return estado;

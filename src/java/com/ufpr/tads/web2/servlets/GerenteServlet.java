@@ -218,14 +218,14 @@ public class GerenteServlet extends HttpServlet {
                        String tipo = request.getParameter("tipo");
                        if (tipo.equals("gerente"))
                        {
-                           Gerente gerente = GerenteFacade.retornaGerente(Integer.parseInt(request.getParameter("idCadastrado")));
+                           Gerente gerente = GerenteFacade.retornaGerente(Integer.parseInt(request.getParameter("idCadatrado")));
                            gerente.setEndereco(endereco);
                            gerente.setPrimeiroNome(request.getParameter("primeiroNome"));
                            gerente.setSobreNome(request.getParameter("sobreNome"));
                            gerente.setTelefone(request.getParameter("telefone"));
                            
                            String senha = request.getParameter("senha");
-                           if (senha != null || senha.equals(""))
+                           if (senha != null || !senha.equals(""))
                            {
                                gerente.setSenha(senha);
                            }
@@ -251,7 +251,7 @@ public class GerenteServlet extends HttpServlet {
                            funcionario.setTelefone(request.getParameter("telefone"));
 
                            String senha = request.getParameter("senha");
-                           if (senha != null || senha.equals(""))
+                           if (senha != null || !senha.equals(""))
                            {
                                funcionario.setSenha(senha);
                            }
@@ -363,6 +363,58 @@ public class GerenteServlet extends HttpServlet {
                        }                        
                     }
                     catch(EstadoException | CidadeException | GerenteException | FuncionarioException | NumberFormatException | FerramentasException e)
+                    {
+                        request.setAttribute("msg", "ERRO: " + e.getMessage());
+                        RequestDispatcher rd = request.getRequestDispatcher("/erro.jsp");
+                        rd.forward(request, response);
+                    }
+                }
+                else if (action.equals("removerFuncionario"))
+                {
+                    try
+                    {
+                        Funcionario funcionario = FuncionarioFacade.retornaFuncionario(Integer.parseInt(request.getParameter("idFuncionario")));
+                        
+                        boolean confirmaRemocao = FuncionarioFacade.removerFuncionario(funcionario);
+                        
+                        if (confirmaRemocao)
+                        {
+                            response.sendRedirect(request.getContextPath() + "/GerenteServlet?action=portal");
+                        }
+                        else
+                        {
+                            request.setAttribute("msg", "Erro ao remover funcionario de id: " + funcionario.getIdFuncionario());
+                            RequestDispatcher rd = request.getRequestDispatcher("/erro.jsp");
+                            rd.forward(request, response);
+                        }
+                    }
+                    catch(FuncionarioException | NumberFormatException e)
+                    {
+                        request.setAttribute("msg", "ERRO: " + e.getMessage());
+                        RequestDispatcher rd = request.getRequestDispatcher("/erro.jsp");
+                        rd.forward(request, response);
+                    }
+                }
+                else if (action.equals("removerGerente"))
+                {
+                    try
+                    {
+                        Gerente gerente = GerenteFacade.retornaGerente(Integer.parseInt(request.getParameter("idGerente")));
+                        
+                        boolean confirmaRemocao = GerenteFacade.removeGerente(gerente);
+                        
+                        if (confirmaRemocao)
+                        {
+                            response.sendRedirect(request.getContextPath() + "/GerenteServlet?action=portal");
+                        }
+                        else
+                        {
+                            request.setAttribute("msg", "Erro ao remover gerente de id: " + gerente.getIdGerente());
+                            RequestDispatcher rd = request.getRequestDispatcher("/erro.jps");
+                            rd.forward(request, response);
+                        }
+                    }
+                    catch(GerenteException | NumberFormatException e)
                     {
                         request.setAttribute("msg", "ERRO: " + e.getMessage());
                         RequestDispatcher rd = request.getRequestDispatcher("/erro.jsp");

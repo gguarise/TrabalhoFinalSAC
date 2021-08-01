@@ -6,14 +6,31 @@
 package com.ufpr.tads.web2.servlets;
 
 import com.ufpr.tads.web2.beans.Atendimento;
+import com.ufpr.tads.web2.beans.Cidade;
 import com.ufpr.tads.web2.beans.Cliente;
+import com.ufpr.tads.web2.beans.Endereco;
+import com.ufpr.tads.web2.beans.Estado;
 import com.ufpr.tads.web2.beans.LoginBean;
+import com.ufpr.tads.web2.beans.Produto;
+import com.ufpr.tads.web2.beans.Situacao;
+import com.ufpr.tads.web2.beans.TipoAtendimento;
 import com.ufpr.tads.web2.facade.AtendimentoException;
 import com.ufpr.tads.web2.facade.AtendimentoFacade;
+import com.ufpr.tads.web2.facade.CidadeException;
+import com.ufpr.tads.web2.facade.CidadeFacade;
 import com.ufpr.tads.web2.facade.ClienteException;
 import com.ufpr.tads.web2.facade.ClienteFacade;
+import com.ufpr.tads.web2.facade.EstadoException;
+import com.ufpr.tads.web2.facade.EstadoFacade;
+import com.ufpr.tads.web2.facade.ProdutoException;
+import com.ufpr.tads.web2.facade.ProdutoFacade;
+import com.ufpr.tads.web2.facade.SituacaoException;
+import com.ufpr.tads.web2.facade.SituacaoFacade;
+import com.ufpr.tads.web2.facade.TipoAtendimentoException;
+import com.ufpr.tads.web2.facade.TipoAtendimentoFacade;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
@@ -78,11 +95,201 @@ public class ClienteServlet extends HttpServlet {
                 }
                 else if (action.equals("mostraAtendimento"))
                 {
-                    //try
-                    //{
-                    //    String sId = request.getParameter("idAtendimento");
-                    //    int id = Integer.parseInt(sId);
-                    //}
+                    try
+                    {
+                        Atendimento atendimento = AtendimentoFacade.retornaAtendimento(Integer.parseInt(request.getParameter("idAtendimento")));
+                        Cliente cliente = ClienteFacade.retornaCliente(logado.getId());
+                        request.setAttribute("cliente", cliente);
+                        request.setAttribute("atendimento", atendimento);
+                        
+                        //Adicionar caminho da tela de visualizacao de atendimento
+                        RequestDispatcher rd = sc.getRequestDispatcher("");
+                        rd.forward(request, response);
+                    }
+                    catch(AtendimentoException | NumberFormatException | ClienteException e)
+                    {
+                        request.setAttribute("msg", "ERRO: " + e.getMessage());
+                        RequestDispatcher rd = sc.getRequestDispatcher("/erro.jsp");
+                        rd.forward(request, response);
+                    }
+                }
+                else if (action.equals("removeAtendimento"))
+                {
+                    try
+                    {
+                        Atendimento atendimento = AtendimentoFacade.retornaAtendimento(Integer.parseInt(request.getParameter("idAtendimento")));
+                        
+                        Situacao emAberto = SituacaoFacade.retornaSituacao(1);
+                        Situacao situacaoAtendimento = atendimento.getSituacao();
+                        
+                        String sitEmAberto = emAberto.getEstado();
+                        String sitAtendimento = situacaoAtendimento.getEstado();
+                        
+                        if (sitAtendimento.equals(sitEmAberto))
+                        {
+                            boolean confirmaRemocao = AtendimentoFacade.removerAtendimento(atendimento);
+
+                            if(confirmaRemocao)
+                            {
+                                response.sendRedirect(request.getContextPath() + "/ClienteServlet?action=portal");
+                            }
+                            else
+                            {
+                                request.setAttribute("msg", "Erro ao remover atendimento de id: " + atendimento.getIdAtendimento());
+                                RequestDispatcher rd = request.getRequestDispatcher("/erro.jsp");
+                                rd.forward(request, response);
+                            }
+                        }
+                        else
+                        {
+                            request.setAttribute("msg", "Não é possível remover atendimentos fechados");
+                            //Adicionar caminho para tela de onde veio o comando de remoção
+                            RequestDispatcher rd = request.getRequestDispatcher("");
+                            rd.forward(request, response);
+                        }
+                    }
+                    catch(AtendimentoException | NumberFormatException | SituacaoException e)
+                    {
+                        request.setAttribute("msg", "ERRO: " + e.getMessage());
+                        RequestDispatcher rd = request.getRequestDispatcher("/erro.jsp");
+                        rd.forward(request, response);
+                    }
+                }
+                else if (action.equals("formNovoAtendimento"))
+                {
+                    try
+                    {
+                        List<Produto> listaProdutos = ProdutoFacade.getLista();
+                        request.setAttribute("listaProdutos", listaProdutos);
+                        List<TipoAtendimento> listaTipoAtendimento = TipoAtendimentoFacade.getLista();
+                        request.setAttribute("listaTipoAtendimento", listaTipoAtendimento);
+                        
+                        RequestDispatcher rd = sc.getRequestDispatcher("/cliente/novoAtendimento.jsp");
+                        rd.forward(request, response);
+                    }
+                    catch(ProdutoException | TipoAtendimentoException e)
+                    {
+                        request.setAttribute("msg", "ERRO: " + e.getMessage());
+                        RequestDispatcher rd = request.getRequestDispatcher("/erro.jsp");
+                        rd.forward(request, response);
+                    }
+                }
+                else if (action.equals("novoAtendimento"))
+                {
+                    try
+                    {
+                        Atendimento atendimento = new Atendimento();
+                        
+                        Cliente cliente = ClienteFacade.retornaCliente(logado.getId());
+                        atendimento.setCliente(cliente);
+                        Produto produto = ProdutoFacade.retornaProduto(Integer.parseInt(request.getParameter("idProduto")));
+                        atendimento.setProduto(produto);                        
+                        TipoAtendimento tipoAtendimento = TipoAtendimentoFacade.retornaTipoAtendimento(Integer.parseInt(request.getParameter("idTipoAtendimento")));
+                        atendimento.setTipoAtendimento(tipoAtendimento);
+                        
+                        atendimento.setDataHoraInicio(Calendar.getInstance());
+                        atendimento.setReclamacao(request.getParameter("reclamacao"));
+                        
+                        Atendimento novoAtendimento = AtendimentoFacade.adicionaAtendimento(atendimento);
+                        
+                        if(novoAtendimento != null)
+                        {
+                            int qtdReclamacoes = produto.getQtdReclamacoes();
+                            qtdReclamacoes++;
+                            produto.setQtdReclamacoes(qtdReclamacoes);
+                            boolean modificou = ProdutoFacade.modificaProduto(produto);
+                            if (modificou)
+                            {
+                                response.sendRedirect(request.getContextPath() + "/ClienteServlet?action=portal");
+                            }
+                            else
+                            {
+                                request.setAttribute("msg", "Erro ao atualizar quantidade de reclamacoes de produto");
+                                RequestDispatcher rd = sc.getRequestDispatcher("/erro.jsp");
+                                rd.forward(request, response);
+                            }
+                        }
+                        else
+                        {
+                            request.setAttribute("msg", "Erro ao adicionar novo atendimento");
+                            RequestDispatcher rd = sc.getRequestDispatcher("/erro.jsp");
+                            rd.forward(request, response);
+                        }
+                    }
+                    catch(ClienteException | ProdutoException | TipoAtendimentoException | NumberFormatException | AtendimentoException e)
+                    {
+                        request.setAttribute("msg", "ERRO: " + e.getMessage());
+                        RequestDispatcher rd = sc.getRequestDispatcher("/erro.jsp");
+                        rd.forward(request, response);
+                    }
+                }
+                else if (action.equals("formModificaCliente"))
+                {
+                    try
+                    {
+                        Cliente cliente = ClienteFacade.retornaCliente(logado.getId());
+                        request.setAttribute("cliente", cliente);
+                        List<Estado> listaEstados = EstadoFacade.getLista();
+                        request.setAttribute("listaEstados", listaEstados);
+                        
+                        RequestDispatcher rd = sc.getRequestDispatcher("cliente/clienteAlterar.jsp");
+                        rd.forward(request, response);
+                    }
+                    catch(ClienteException | EstadoException e)
+                    {
+                        request.setAttribute("msg", "ERRO: " + e.getMessage());
+                        RequestDispatcher rd = sc.getRequestDispatcher("/erro.jsp");
+                        rd.forward(request, response);
+                    }
+                }
+                else if (action.equals("modificaCliente"))
+                {
+                    try
+                    {
+                        Endereco endereco = new Endereco();
+                        
+                        Estado estado = EstadoFacade.retornaEstado(Integer.parseInt(request.getParameter("idEstado")));
+                        Cidade cidade = CidadeFacade.retornaCidade(Integer.parseInt(request.getParameter("idCidade")));
+                        cidade.setEstado(estado);
+                        endereco.setCidade(cidade);
+                        endereco.setRua(request.getParameter("rua"));
+                        endereco.setNumero(Integer.parseInt(request.getParameter("numero")));
+                        endereco.setBairro(request.getParameter("bairro"));
+                        endereco.setCep(Integer.parseInt(request.getParameter("cep")));
+                        endereco.setComplemento(request.getParameter("complemento"));
+                        
+                        Cliente cliente = ClienteFacade.retornaCliente(logado.getId());
+                        cliente.setEndereco(endereco);
+                        
+                        cliente.setPrimeiroNome(request.getParameter("primeiroNome"));
+                        cliente.setSobreNome(request.getParameter("sobreNome"));
+                        cliente.setTelefone(request.getParameter("telefone"));
+                        
+                        String senha = request.getParameter("senha");
+                        if (senha != null || !senha.equals(""))
+                        {
+                            cliente.setSenha(request.getParameter("senha"));
+                        }
+                        
+                        boolean confirmaModificacao = ClienteFacade.modificaCliente(cliente);
+                        
+                        if(confirmaModificacao)
+                        {                          
+                            response.sendRedirect(request.getContextPath() + "/ClienteServlet?action=portal");
+                        }
+                        else
+                        {
+                            request.setAttribute("msg", "Erro ao modificar cliente de id: " + logado.getId());
+                            RequestDispatcher rd = sc.getRequestDispatcher("/erro.jsp");
+                            rd.forward(request, response);
+                        }
+                    }
+                    catch(EstadoException | CidadeException | ClienteException e)
+                    {
+                        request.setAttribute("msg", "ERRO: " + e.getMessage());
+                        RequestDispatcher rd = sc.getRequestDispatcher("/erro.jsp");
+                        rd.forward(request, response);
+                    }
                 }
             }
             else

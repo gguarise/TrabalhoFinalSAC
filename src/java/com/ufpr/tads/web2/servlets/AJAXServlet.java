@@ -43,47 +43,27 @@ public class AJAXServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-
+            
             String idEstado = request.getParameter("idEstado");
             ServletContext sc = request.getServletContext();
-
-            try {
+            
+            try
+            {
                 Estado estado = EstadoFacade.retornaEstado(Integer.parseInt(idEstado));
                 List<Cidade> listaCidades = CidadeFacade.getLista(estado);
-
+                
                 String json = new Gson().toJson(listaCidades);
-
+                
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(json);
-            } catch (EstadoException | CidadeException | NumberFormatException e) {
+            }
+            catch(EstadoException | CidadeException | NumberFormatException e)
+            {
                 request.setAttribute("msg", "ERRO: " + e.getMessage());
                 RequestDispatcher rd = request.getRequestDispatcher("erro.jsp");
                 rd.forward(request, response);
             }
-        }
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        String idEstado = request.getParameter("idEstado");
-        ServletContext sc = request.getServletContext();
-
-        try {
-            Estado estado = EstadoFacade.retornaEstado(Integer.parseInt(idEstado));
-            List<Cidade> listaCidades = CidadeFacade.getLista(estado);
-
-            String json = new Gson().toJson(listaCidades);
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(json);
-        } catch (EstadoException | CidadeException | NumberFormatException e) {
-            request.setAttribute("msg", "ERRO: " + e.getMessage());
-            RequestDispatcher rd = request.getRequestDispatcher("erro.jsp");
-            rd.forward(request, response);
         }
     }
 
@@ -96,6 +76,11 @@ public class AJAXServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
 
     /**
      * Handles the HTTP <code>POST</code> method.
